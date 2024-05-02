@@ -185,6 +185,10 @@ class Conta():
         return self._agencia
 
     @property
+    def cliente(self) -> Cliente:
+        return self._cliente
+
+    @property
     def historico(self) -> float:
         return self._historico
 
