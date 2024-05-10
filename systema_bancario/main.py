@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 import string
 import functools
+import re
+from pathlib import Path
 
 MENU = """
 ************ MENU ***********
@@ -21,6 +23,7 @@ MENU = """
 
 Digite uma opção do menu: """
 
+ROOT_PATH = Path(__file__).parent
 sequencial_conta = 1
 log_operacoes = []
 
@@ -34,6 +37,11 @@ def log_operacao(func):
         now = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
         retorno = func(*args, **kwargs)
         log_operacoes.append(f"Log: Função \"{func.__name__}\" executada em {now}.")
+        try:
+            with open(ROOT_PATH / "log.txt", "a", encoding="utf-8") as log:
+                log.write(f"[{now}] Função {func.__name__} executada com os argumentos ({", ".join(re.sub("[\\[\\]]", "", str(arg)) for arg in args)}){" e (" + kwargs +")" if len(kwargs) > 0 else ""} e retornando {retorno}.\n")
+        except IOError:
+            print("Erro ao tentar abrir o arquivo de log.")
         return retorno
     return envelope
     
@@ -161,9 +169,9 @@ def imprimir_extrato(conta, tipo_transacao=None):
             valor_formatado = valor_string.rjust(12)
             extrato += f"|{transacao["tipo"].upper().ljust(13)}|{valor_formatado}{transacao["data"].strftime("%d/%m/%Y %H:%M:%S").center(21)}|\n"
         
-        print("""
+        print(f"""
 -------------------------------------------------
-|                     EXTRATO                   |
+|{"EXTRATO DA CONTA".center(47) if not tipo_transacao else "EXTRATO DE SAQUES".center(47) if tipo_transacao.lower() == "saque" else "EXTRATO DE DEPÓSITOS".center(47)}|
 -------------------------------------------------
 |OPERAÇÃO     |      VALOR|      DATA/HORA      |
 -------------------------------------------------""")
@@ -205,8 +213,8 @@ class Conta():
         self._historico = Historico()
         self._max_transacoes_diarias = 10
         
-    def __str__(self):
-        return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}<Ag: {self._agencia} - Nro: {self._numero}>" 
                 
     @property
     def saldo(self) -> float:
@@ -271,6 +279,9 @@ class ContaCorrente(Conta):
         super().__init__(**kw)
         self._limite = limite
         self._limite_saques = limite_saques
+        
+    def __repr__(self) -> str:
+        return f"{super().__class__.__name__}<Ag: {super()._agencia} - Nro: {super()._numero}>"
     
     def sacar(self, valor) -> bool:
         numero_saques_dia = len([transacao for transacao in self._historico.transacoes if transacao["tipo"] == Saque.__name__])
@@ -307,9 +318,6 @@ class Cliente:
         self._endereco = endereco
         self._contas = []
         
-    def __str__(self):
-        return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
-    
     @property
     def endereco(self) -> str:
         return self._endereco
@@ -330,6 +338,9 @@ class PessoaFisica(Cliente):
         self._cpf = cpf
         self._nome = nome
         self._data_nascimento = data_nascimento
+        
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}<CPF: {self._cpf}>"
         
     @property
     def cpf(self) -> str:
