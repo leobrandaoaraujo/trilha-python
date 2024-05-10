@@ -2,33 +2,50 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from datetime import datetime
 import string
+import functools
 
 MENU = """
 ************ MENU ***********
 * [d] Depositar valor       * 
 * [s] Sacar valor           *
-* [e] Imprimir extrato      *
 * [c] Cadastrar cliente     *
 * [a] Cadastrar conta       *
-* [l] Listar contas         *
 * [i] Listar clientes       *
+* [l] Listar contas         *
+* [e] Extrato completo      *
+* [es] Extrato de saques    *
+* [ed] Extrato de depósitos *
+* [o] Listar log            *
 * [q] Sair do sistema       *
 *****************************
 
 Digite uma opção do menu: """
 
 sequencial_conta = 1
+log_operacoes = []
 
 def exbir_menu(menu):
     return input(menu)
+
+def log_operacao(func):
+    global log_operacoes
+    @functools.wraps(func)
+    def envelope(*args, **kwargs):
+        now = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
+        retorno = func(*args, **kwargs)
+        log_operacoes.append(f"Log: Função \"{func.__name__}\" executada em {now}.")
+        return retorno
+    return envelope
     
 def main():
+    global log_operacoes
+    
     contas_banco = []
     clientes_banco = []
   
     while True:
         opcao = exbir_menu(MENU)
-        if opcao =="d" or opcao == "s" or opcao == "e":
+        if opcao =="d" or opcao == "s" or opcao == "e" or opcao == "es" or opcao == "ed":
             cpf = input("\nInforme o CPF do cliente. (Somente números): ")
             cliente = buscar_cliente(cpf, clientes_banco)
             if not cliente:
@@ -55,7 +72,12 @@ def main():
                         transacao = Deposito(valor) if opcao=="d" else Saque(valor)
                         cliente.realizar_transacao(conta, transacao)
                     else:
-                        imprimir_extrato(conta)
+                        if  opcao == "e":
+                            imprimir_extrato(conta)
+                        elif opcao == "es":
+                            imprimir_extrato(conta, "saque")
+                        else:
+                            imprimir_extrato(conta, "deposito")
         elif opcao == "c":
             cadastrar_cliente(clientes_banco)
         elif opcao == "a":
@@ -64,6 +86,8 @@ def main():
             listar_contas(contas_banco)
         elif opcao == "i":
             listar_clientes(clientes_banco)
+        elif opcao == "o":
+            listar_log(log_operacoes)
         elif opcao == "q":
             print("\nObrigado por utilizar o nosso banco!\n")
             break
@@ -78,6 +102,7 @@ def buscar_conta(cliente, numero_conta):
     conta = [conta for conta in cliente.contas if int(conta.numero) == int(numero_conta)]
     return conta[0] if conta else None
 
+@log_operacao
 def cadastrar_cliente(clientes_banco) -> Cliente:
     cpf_liberado = False
     nome = input("Informe o nome do cliente: ")
@@ -98,6 +123,7 @@ def cadastrar_cliente(clientes_banco) -> Cliente:
     print(f"Cliente <{string.capwords(" ".join(nome.split()))}> cadastrado com sucesso.")
     return cliente
 
+@log_operacao
 def cadastrar_conta(clientes_banco, contas_banco):
     global sequencial_conta
     sucesso = False
@@ -118,10 +144,11 @@ def cadastrar_conta(clientes_banco, contas_banco):
                 break
             cpf = input("O CPF informado não pertence a nenhum de nossos clientes. Por favor informe outro CPF. (Somente números): ")
 
-def imprimir_extrato(conta):
+@log_operacao
+def imprimir_extrato(conta, tipo_transacao=None):
     saldo_string = f"SALDO: R${conta.saldo:.2f}|"
     saldo_formatado = "|" + '{: >26}'.format(saldo_string)
-    transacoes = conta.historico.transacoes
+    transacoes = conta.historico.gerar_relatorio(tipo_transacao)
     if not transacoes:
         print()
         print("---------------------------")
@@ -142,14 +169,15 @@ def imprimir_extrato(conta):
 ---------------------------""")
         print(extrato, end = "")
         print("---------------------------")
-        print(saldo_formatado)
-        print("---------------------------")
+        if not tipo_transacao:
+            print(saldo_formatado)
+            print("---------------------------")
         
 def listar_contas(contas_banco):
     if len(contas_banco) == 0:
         print("\nNenhuma conta foi cadastrada no sistema ainda.", end = "")
     else:
-        for conta in contas_banco:
+        for conta in IteradorConta(contas_banco):
             print(f"\nAgência: {conta.agencia} / Conta: {conta.numero} / Titular: {conta.cliente.nome}", end = "")
     print()
 
@@ -160,6 +188,13 @@ def listar_clientes(clientes_banco):
         for pessoa in clientes_banco:
             print(f"\nCliente: {pessoa.nome} / CPF: {pessoa.cpf}", end = "")
     print()
+
+def listar_log(log_operacoes):
+    print()
+    print(" LOG DE OPERAÇÕES ".center(70 , "-"))
+    for log in log_operacoes:
+        print(log)
+    print("-".center(70 , "-"))
 
 class Conta():
     def __init__(self, numero, cliente) -> None:
@@ -196,6 +231,7 @@ class Conta():
     def nova_conta(cls, cliente, numero) -> Conta:
         return cls(numero, cliente)
 
+    @log_operacao
     def sacar(self, valor) -> bool:
         saldo_insuficiente = valor > self._saldo
         
@@ -209,7 +245,8 @@ class Conta():
             print("Valor inválido, por favor digite um valor novamente.")
         
         return False
-	
+    
+    @log_operacao
     def depositar(self, valor) -> bool:
         saldo_atual = self._saldo
         
@@ -242,6 +279,22 @@ class ContaCorrente(Conta):
         
         return False
 
+class IteradorConta():
+    def __init__(self, contas: list[Conta]):
+        self.contas = contas
+        self.index = 0
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        try:
+            conta = self.contas[self.index]
+            self.index += 1
+            return conta 
+        except IndexError:
+            raise StopIteration
+    
 class Cliente:
     def __init__(self, endereco) -> None:
         self._endereco = endereco
@@ -282,7 +335,6 @@ class PessoaFisica(Cliente):
     @property
     def data_nascimento(self) -> str:
         return self._data_nascimento
-
         
 class Historico():
     def __init__(self) -> None:
@@ -294,6 +346,12 @@ class Historico():
     
     def adicionar_transacao(self, transacao):
         self._transacoes.append({"tipo": transacao.__class__.__name__, "valor": transacao.valor, "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S")})
+        
+    def gerar_relatorio(self, tipo_transacao=None):
+        if not tipo_transacao:
+            return self._transacoes
+        else:
+            return [transacao for transacao in self._transacoes if transacao["tipo"].lower() == tipo_transacao.lower()]
         
 class Transacao(ABC):
     @property
