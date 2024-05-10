@@ -147,31 +147,31 @@ def cadastrar_conta(clientes_banco, contas_banco):
 @log_operacao
 def imprimir_extrato(conta, tipo_transacao=None):
     saldo_string = f"SALDO: R${conta.saldo:.2f}|"
-    saldo_formatado = "|" + '{: >26}'.format(saldo_string)
+    saldo_formatado = "|" + saldo_string.rjust(48)
     transacoes = conta.historico.gerar_relatorio(tipo_transacao)
     if not transacoes:
         print()
-        print("---------------------------")
+        print("-------------------------------------------------")
         print(saldo_formatado)
-        print("---------------------------")
+        print("-------------------------------------------------")
     else:
         extrato = ""
         for transacao in transacoes:
             valor_string = f"R${float(transacao["valor"]):.2f}|"
-            valor_formatado = '{: >12}'.format(valor_string)
-            extrato += f"|{transacao["tipo"].upper().ljust(13)}|{valor_formatado}\n"
+            valor_formatado = valor_string.rjust(12)
+            extrato += f"|{transacao["tipo"].upper().ljust(13)}|{valor_formatado}{transacao["data"].strftime("%d/%m/%Y %H:%M:%S").center(21)}|\n"
         
         print("""
----------------------------
-|          EXTRATO        |
---------------------------
-|OPERAÇÃO     |      VALOR|
----------------------------""")
+-------------------------------------------------
+|                     EXTRATO                   |
+-------------------------------------------------
+|OPERAÇÃO     |      VALOR|      DATA/HORA      |
+-------------------------------------------------""")
         print(extrato, end = "")
-        print("---------------------------")
+        print("-------------------------------------------------")
         if not tipo_transacao:
             print(saldo_formatado)
-            print("---------------------------")
+            print("-------------------------------------------------")
         
 def listar_contas(contas_banco):
     if len(contas_banco) == 0:
@@ -203,6 +203,7 @@ class Conta():
         self._agencia = "0001"
         self._cliente = cliente
         self._historico = Historico()
+        self._max_transacoes_diarias = 10
         
     def __str__(self):
         return f"{self.__class__.__name__}: {', '.join([f'{chave}={valor}' for chave, valor in self.__dict__.items()])}"
@@ -230,12 +231,15 @@ class Conta():
     @classmethod
     def nova_conta(cls, cliente, numero) -> Conta:
         return cls(numero, cliente)
-
+    
     @log_operacao
     def sacar(self, valor) -> bool:
         saldo_insuficiente = valor > self._saldo
+        transacoes_diarias_excedidas = self._historico.trasacoes_do_dia >= self._max_transacoes_diarias
         
-        if saldo_insuficiente:
+        if transacoes_diarias_excedidas:
+            print(f"\nO número máximo de {self._max_transacoes_diarias} transações diárias já foi atingido.")
+        elif saldo_insuficiente:
             print(f"\nSaldo insuficiente! Seu saldo é de:{self._saldo:.2f}")
         elif valor > 0:
             self._saldo -= valor
@@ -249,8 +253,11 @@ class Conta():
     @log_operacao
     def depositar(self, valor) -> bool:
         saldo_atual = self._saldo
+        transacoes_diarias_excedidas = self._historico.trasacoes_do_dia >= self._max_transacoes_diarias
         
-        if valor > 0:
+        if transacoes_diarias_excedidas:
+            print(f"\nO número máximo de {self._max_transacoes_diarias} transações diárias já foi atingido.")
+        elif valor > 0:
             self._saldo += valor
             print(f"Depósito no valor de R${valor:.2f} efetuado com sucesso.")
             return True
@@ -344,8 +351,12 @@ class Historico():
     def transacoes(self) -> list:
         return self._transacoes
     
+    @property
+    def trasacoes_do_dia(self) -> int:
+        return len([transacao for transacao in self._transacoes if transacao["data"].date() == datetime.now().date()])
+    
     def adicionar_transacao(self, transacao):
-        self._transacoes.append({"tipo": transacao.__class__.__name__, "valor": transacao.valor, "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S")})
+        self._transacoes.append({"tipo": transacao.__class__.__name__, "valor": transacao.valor, "data": datetime.now()})
         
     def gerar_relatorio(self, tipo_transacao=None):
         if not tipo_transacao:
