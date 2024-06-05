@@ -1,7 +1,7 @@
 # CrossfitApi
 ## Version: 0.1.0
 
-### Schema Model (Sample)
+### Schema Model (Exemplo)
 
     {
       "pk_id": "e544f399-e148-4068-8112-613886d598aa",
@@ -30,17 +30,15 @@
 
     Request URL: http://127.0.0.1:8000/atletas/
 
-##### Summary:
+#### Ação: Listar atletas
 
-Listar atletas
-
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful Response |
 
-#### POST /atletas/
+### POST /atletas/
 
     curl -X 'POST' 'http://127.0.0.1:8000/atletas/' -H 'accept: application/json' -H 'Content-Type: application/json'
       -d '{
@@ -62,41 +60,37 @@ Listar atletas
         }
       }'
 
-##### Summary:
+#### Ação: Criar um novo atleta
 
-Criar um novo atleta
-
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 201 | Successful Response |
 | 422 | Validation Error |
 
-#### GET /atletas/{id}
+### GET /atletas/{id}
 
     curl -X 'GET' 'http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa' -H 'accept: application/json'
 
     Request URL: http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa
 
-##### Summary:
+#### Ação: Consultar um atleta pelo ID
 
-Consultar um atleta pelo ID
-
-##### Parameters
+#### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | pk_id | path |  | Yes | string (uuid4) |
 
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-#### PATCH /atletas/{id}
+### PATCH /atletas/{id}
 
     curl -X 'PATCH' 'http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa' -H 'accept: application/json' -H 'Content-Type: application/json'
       -d '{
@@ -120,86 +114,78 @@ Consultar um atleta pelo ID
 
     Request URL: http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa      
 
-##### Summary:
+#### Ação: Editar um atleta pelo ID
 
-Editar um atleta pelo ID
-
-##### Parameters
+#### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | pk_id | path |  | Yes | string (uuid4) |
 
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-#### DELETE /atletas/{id}
+### DELETE /atletas/{id}
 
     curl -X 'DELETE' 'http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa' -H 'accept: */*'
 
     Request URL: http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa
 
-##### Summary:
+#### Ação: Excluir um atleta pelo ID
 
-Excluir um atleta pelo ID
-
-##### Parameters
+#### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | pk_id | path |  | Yes | string (uuid4) |
 
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 204 | Successful Response |
 | 422 | Validation Error |
 
-#### GET /atletas/{nome}
+### GET /atletas/{nome}
 
     curl -X 'GET' 'http://127.0.0.1:8000/atletas/Marcelo' -H 'accept: application/json'
 
     Request URL: http://127.0.0.1:8000/atletas/Marcelo
 
-##### Summary:
+#### Ação: Consultar um atleta pelo NOME
 
-Consultar um atleta pelo NOME
-
-##### Parameters
+#### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | nome | path |  | Yes | string |
 
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-#### GET /atletas/{cpf}
+### GET /atletas/{cpf}
 
     curl -X 'GET' 'http://127.0.0.1:8000/atletas/12345678911' -H 'accept: application/json'
 
     Request URL: http://127.0.0.1:8000/atletas/12345678911
 
-##### Summary:
+#### Ação: Consultar um atleta pelo CPF
 
-Consultar um atleta pelo CPF
-
-##### Parameters
+#### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | cpf | path |  | Yes | string |
 
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
@@ -208,50 +194,53 @@ Consultar um atleta pelo CPF
 
 # Endpoints (Centros de Treinamento)
 
-#### GET /centros_treinamento/
+### GET /centros_treinamento/
 
+    curl -X 'GET' 'http://127.0.0.1:8000/centros_treinamento/' -H 'accept: application/json'
 
+    Request URL: http://127.0.0.1:8000/centros_treinamento/
 
-##### Summary:
+#### Ação: Listar centros de treinamento
 
-Listar centros de treinamento
-
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful Response |
 
-#### POST
+### POST
 
+    curl -X 'POST' 'http://127.0.0.1:8000/centros_treinamento/' -H 'accept: application/json' -H 'Content-Type: application/json'
+      -d '{
+          "nome": "King",
+          "endereco": "Rua A, 123, São José",
+          "proprietario": "Marcus Silva"
+        }'
 
+#### Ação: Criar um novo centro de treinamento
 
-##### Summary:
-
-Criar um novo centro de treinamento
-
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 201 | Successful Response |
 | 422 | Validation Error |
 
-#### GET /centros_treinamento/{id}
+### GET /centros_treinamento/{id}
 
+    curl -X 'GET' 'http://127.0.0.1:8000/centros_treinamento/e544f399-e148-4068-8112-613886d598aa' -H 'accept: application/json'
 
+    Request URL: http://127.0.0.1:8000/centros_treinamento/e544f399-e148-4068-8112-613886d598aa
 
-##### Summary:
+#### Ação: Consultar um centro de treinamento pelo ID
 
-Consultar um centro de treinamento pelo ID
-
-##### Parameters
+#### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | id | path |  | Yes | string (uuid4) |
 
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
@@ -260,50 +249,51 @@ Consultar um centro de treinamento pelo ID
 
 # Endpoints (Categorias)
 
-#### GET /categorias/
+### GET /categorias/
 
+    curl -X 'GET' 'http://127.0.0.1:8000/categorias/' -H 'accept: application/json'
 
+    Request URL: http://127.0.0.1:8000/categorias/
 
-##### Summary:
+#### Ação: Listar categorias
 
-Listar categorias
-
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful Response |
 
-#### POST
+### POST
 
+    curl -X 'POST' 'http://127.0.0.1:8000/categorias/' -H 'accept: application/json' -H 'Content-Type: application/json'
+      -d '{
+          "nome": "Scale"
+        }'
 
+#### Ação: Criar uma nova categoria
 
-##### Summary:
-
-Criar uma nova categoria
-
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 201 | Successful Response |
 | 422 | Validation Error |
 
-#### GET /categorias/{id}
+### GET /categorias/{id}
 
+    curl -X 'GET' 'http://127.0.0.1:8000/categorias/e544f399-e148-4068-8112-613886d598aa' -H 'accept: application/json'
 
+    Request URL: http://127.0.0.1:8000/categorias/e544f399-e148-4068-8112-613886d598aa
 
-##### Summary:
+#### Ação: Consultar uma categoria pelo ID
 
-Consultar uma categoria pelo ID
-
-##### Parameters
+#### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | id | path |  | Yes | string (uuid4) |
 
-##### Responses
+#### Responses
 
 | Code | Description |
 | ---- | ----------- |
