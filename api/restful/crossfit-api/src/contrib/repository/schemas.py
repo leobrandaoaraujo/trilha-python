@@ -9,5 +9,5 @@ class BaseSchema(BaseModel):
         from_attributes = True
         
 class OutMixin(BaseSchema):
-    id: Annotated[UUID4, Field(description="Identificador único")]
+    pk_id: Annotated[UUID4, Field(description="Identificador único")]
     created_at: Annotated[datetime, Field(description="Data de criação")]
