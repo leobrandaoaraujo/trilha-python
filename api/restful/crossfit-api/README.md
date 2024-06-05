@@ -1,9 +1,35 @@
 # CrossfitApi
 ## Version: 0.1.0
 
-### /atletas/
+### Schema Model (Sample)
 
-#### GET
+    {
+      "pk_id": "e544f399-e148-4068-8112-613886d598aa",
+      "created_at": "2024-06-05T20:35:33.095Z",
+      "nome": "João",
+      "cpf": "12345678911",
+      "idade": 25,
+      "peso": 75.5,
+      "altura": 1.7,
+      "sexo": "M",
+      "categoria": {
+        "nome": "Scale"
+      },
+      "centro_treinamento": {
+        "nome": "King",
+        "endereco": "Rua A, 123, São José",
+        "proprietario": "Marcus Silva"
+      }
+    }
+
+# Endpoints (Atletas)
+
+### GET /atletas/
+
+    curl -X 'GET' 'http://127.0.0.1:8000/atletas/' -H 'accept: application/json'
+
+    Request URL: http://127.0.0.1:8000/atletas/
+
 ##### Summary:
 
 Listar atletas
@@ -14,7 +40,28 @@ Listar atletas
 | ---- | ----------- |
 | 200 | Successful Response |
 
-#### POST
+#### POST /atletas/
+
+    curl -X 'POST' 'http://127.0.0.1:8000/atletas/' -H 'accept: application/json' -H 'Content-Type: application/json'
+      -d '{
+        "pk_id": "string",
+        "created_at": "2024-06-05T20:35:33.095Z",
+        "nome": "João",
+        "cpf": "12345678911",
+        "idade": 25,
+        "peso": 75.5,
+        "altura": 1.7,
+        "sexo": "M",
+        "categoria": {
+          "nome": "Scale"
+        },
+        "centro_treinamento": {
+          "nome": "King",
+          "endereco": "Rua A, 123, São José",
+          "proprietario": "Marcus Silva"
+        }
+      }'
+
 ##### Summary:
 
 Criar um novo atleta
@@ -26,9 +73,12 @@ Criar um novo atleta
 | 201 | Successful Response |
 | 422 | Validation Error |
 
-### /atletas/{id}
+#### GET /atletas/{id}
 
-#### GET
+    curl -X 'GET' 'http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa' -H 'accept: application/json'
+
+    Request URL: http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa
+
 ##### Summary:
 
 Consultar um atleta pelo ID
@@ -37,7 +87,7 @@ Consultar um atleta pelo ID
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| id | path |  | Yes | string (uuid4) |
+| pk_id | path |  | Yes | string (uuid4) |
 
 ##### Responses
 
@@ -46,7 +96,30 @@ Consultar um atleta pelo ID
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-#### PATCH
+#### PATCH /atletas/{id}
+
+    curl -X 'PATCH' 'http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa' -H 'accept: application/json' -H 'Content-Type: application/json'
+      -d '{
+        "pk_id": "string",
+        "created_at": "2024-06-05T21:00:01.644Z",
+        "nome": "João",
+        "cpf": "12345678911",
+        "idade": 25,
+        "peso": 75.5,
+        "altura": 1.7,
+        "sexo": "M",
+        "categoria": {
+          "nome": "Scale"
+        },
+        "centro_treinamento": {
+          "nome": "King",
+          "endereco": "Rua A, 123, São José",
+          "proprietario": "Marcus Silva"
+        }
+      }'
+
+    Request URL: http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa      
+
 ##### Summary:
 
 Editar um atleta pelo ID
@@ -55,7 +128,7 @@ Editar um atleta pelo ID
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| id | path |  | Yes | string (uuid4) |
+| pk_id | path |  | Yes | string (uuid4) |
 
 ##### Responses
 
@@ -64,7 +137,12 @@ Editar um atleta pelo ID
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-#### DELETE
+#### DELETE /atletas/{id}
+
+    curl -X 'DELETE' 'http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa' -H 'accept: */*'
+
+    Request URL: http://127.0.0.1:8000/atletas/e544f399-e148-4068-8112-613886d598aa
+
 ##### Summary:
 
 Excluir um atleta pelo ID
@@ -73,7 +151,7 @@ Excluir um atleta pelo ID
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| id | path |  | Yes | string (uuid4) |
+| pk_id | path |  | Yes | string (uuid4) |
 
 ##### Responses
 
@@ -82,9 +160,12 @@ Excluir um atleta pelo ID
 | 204 | Successful Response |
 | 422 | Validation Error |
 
-### /atletas/{nome}
+#### GET /atletas/{nome}
 
-#### GET
+    curl -X 'GET' 'http://127.0.0.1:8000/atletas/Marcelo' -H 'accept: application/json'
+
+    Request URL: http://127.0.0.1:8000/atletas/Marcelo
+
 ##### Summary:
 
 Consultar um atleta pelo NOME
@@ -102,9 +183,12 @@ Consultar um atleta pelo NOME
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-### /atletas/{cpf}
+#### GET /atletas/{cpf}
 
-#### GET
+    curl -X 'GET' 'http://127.0.0.1:8000/atletas/12345678911' -H 'accept: application/json'
+
+    Request URL: http://127.0.0.1:8000/atletas/12345678911
+
 ##### Summary:
 
 Consultar um atleta pelo CPF
@@ -122,9 +206,12 @@ Consultar um atleta pelo CPF
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-### /centros_treinamento/
+# Endpoints (Centros de Treinamento)
 
-#### GET
+#### GET /centros_treinamento/
+
+
+
 ##### Summary:
 
 Listar centros de treinamento
@@ -136,6 +223,9 @@ Listar centros de treinamento
 | 200 | Successful Response |
 
 #### POST
+
+
+
 ##### Summary:
 
 Criar um novo centro de treinamento
@@ -147,9 +237,10 @@ Criar um novo centro de treinamento
 | 201 | Successful Response |
 | 422 | Validation Error |
 
-### /centros_treinamento/{id}
+#### GET /centros_treinamento/{id}
 
-#### GET
+
+
 ##### Summary:
 
 Consultar um centro de treinamento pelo ID
@@ -167,9 +258,12 @@ Consultar um centro de treinamento pelo ID
 | 200 | Successful Response |
 | 422 | Validation Error |
 
-### /categorias/
+# Endpoints (Categorias)
 
-#### GET
+#### GET /categorias/
+
+
+
 ##### Summary:
 
 Listar categorias
@@ -181,6 +275,9 @@ Listar categorias
 | 200 | Successful Response |
 
 #### POST
+
+
+
 ##### Summary:
 
 Criar uma nova categoria
@@ -192,9 +289,10 @@ Criar uma nova categoria
 | 201 | Successful Response |
 | 422 | Validation Error |
 
-### /categorias/{id}
+#### GET /categorias/{id}
 
-#### GET
+
+
 ##### Summary:
 
 Consultar uma categoria pelo ID
