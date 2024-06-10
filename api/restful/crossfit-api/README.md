@@ -1,7 +1,7 @@
 # CrossfitApi
 ## Version: 0.1.0
 
-## Wtih: FastAPI | Uvicorn | SQLAlchemy | Pydantic
+## With: FastAPI | Uvicorn | SQLAlchemy | Pydantic
 
 ### Schema Model (Exemplo)
 
